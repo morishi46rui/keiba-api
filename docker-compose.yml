@@ -23,6 +23,7 @@ services:
     container_name: keiba_app
     volumes:
       - ./:/var/www
+      - composer_cache:/tmp/composer
     depends_on:
       - db
       - redis
@@ -35,6 +36,10 @@ services:
       - DB_DATABASE=${DB_DATABASE:-keiba}
       - DB_USERNAME=${DB_USERNAME:-keiba_user}
       - DB_PASSWORD=${DB_PASSWORD:-secret}
+      - COMPOSER_HOME=/tmp/composer
+      - COMPOSER_CACHE_DIR=/tmp/composer/cache
+      - XDG_CONFIG_HOME=/tmp
+      - XDG_DATA_HOME=/tmp
 
   # PostgreSQL 18データベース
   db:
@@ -69,12 +74,18 @@ services:
     command: php artisan queue:work --tries=3
     volumes:
       - ./:/var/www
+      - composer_cache:/tmp/composer
     depends_on:
       - app
       - db
       - redis
     networks:
       - keiba
+    environment:
+      - COMPOSER_HOME=/tmp/composer
+      - COMPOSER_CACHE_DIR=/tmp/composer/cache
+      - XDG_CONFIG_HOME=/tmp
+      - XDG_DATA_HOME=/tmp
 
 networks:
   keiba:
@@ -82,4 +93,6 @@ networks:
 
 volumes:
   postgres_data:
+    driver: local
+  composer_cache:
     driver: local

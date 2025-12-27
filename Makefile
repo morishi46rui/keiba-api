@@ -1,4 +1,4 @@
-.PHONY: build up upd down stop re migrate seed bash install test fmt
+.PHONY: build up upd down stop re migrate seed bash install test fix swaggger swaggger-open
 
 build:
 	docker-compose build
@@ -50,3 +50,11 @@ test:
 # コードフォーマットを実行
 fix:
 	docker-compose exec app ./vendor/bin/pint
+
+# Swaggerドキュメントを生成
+swaggger:
+	docker-compose exec app php artisan l5-swagger:generate
+
+# Swaggerドキュメントを生成してブラウザで開く
+swaggger-open: swaggger
+	open http://localhost:8000/api/documentation
