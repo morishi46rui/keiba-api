@@ -5,25 +5,35 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
+use OpenApi\Attributes as OA;
 
 class SampleController extends Controller
 {
-    /**
-     * @OA\Get(
-     *     path="/api/sample",
-     *     tags={"サンプル"},
-     *     summary="サンプルデータの取得",
-     *     description="サンプルエンドポイントの説明",
-     *     @OA\Response(
-     *         response=200,
-     *         description="成功時のレスポンス",
-     *         @OA\JsonContent(
-     *             @OA\Property(property="message", type="string", example="Hello, World!"),
-     *             @OA\Property(property="timestamp", type="string", format="date-time", example="2025-12-28T01:00:00Z")
-     *         )
-     *     )
-     * )
-     */
+    #[OA\Get(
+        path: '/api/sample',
+        tags: ['サンプル'],
+        summary: 'サンプルデータの取得',
+        description: 'サンプルエンドポイントの説明'
+    )]
+    #[OA\Response(
+        response: 200,
+        description: '成功時のレスポンス',
+        content: new OA\JsonContent(
+            properties: [
+                new OA\Property(
+                    'message',
+                    type: 'string',
+                    example: 'Hello, World!'
+                ),
+                new OA\Property(
+                    'timestamp',
+                    type: 'string',
+                    format: 'date-time',
+                    example: '2025-12-28T01:00:00Z'
+                )
+            ]
+        )
+    )]
     public function index(): JsonResponse
     {
         return response()->json([
@@ -32,37 +42,43 @@ class SampleController extends Controller
         ]);
     }
 
-    /**
-     * @OA\Post(
-     *     path="/api/sample",
-     *     tags={"サンプル"},
-     *     summary="サンプルデータの作成",
-     *     description="サンプルデータを作成します",
-     *     @OA\RequestBody(
-     *         required=true,
-     *         @OA\JsonContent(
-     *             required={"name"},
-     *             @OA\Property(property="name", type="string", example="テストデータ"),
-     *             @OA\Property(property="description", type="string", example="説明文")
-     *         )
-     *     ),
-     *     @OA\Response(
-     *         response=201,
-     *         description="作成成功",
-     *         @OA\JsonContent(
-     *             @OA\Property(property="message", type="string", example="Created successfully"),
-     *             @OA\Property(property="data", type="object",
-     *                 @OA\Property(property="name", type="string"),
-     *                 @OA\Property(property="description", type="string")
-     *             )
-     *         )
-     *     ),
-     *     @OA\Response(
-     *         response=422,
-     *         description="バリデーションエラー"
-     *     )
-     * )
-     */
+    #[OA\Post(
+        path: '/api/sample',
+        tags: ['サンプル'],
+        summary: 'サンプルデータの作成',
+        description: 'サンプルデータを作成します',
+        requestBody: new OA\RequestBody(
+            required: true,
+            content: new OA\JsonContent(
+                required: ['name'],
+                properties: [
+                    new OA\Property('name', type: 'string', example: 'テストデータ'),
+                    new OA\Property('description', type: 'string', example: '説明文')
+                ]
+            )
+        )
+    )]
+    #[OA\Response(
+        response: 201,
+        description: '作成成功',
+        content: new OA\JsonContent(
+            properties: [
+                new OA\Property('message', type: 'string', example: 'Created successfully'),
+                new OA\Property(
+                    'data',
+                    type: 'object',
+                    properties: [
+                        new OA\Property('name', type: 'string'),
+                        new OA\Property('description', type: 'string')
+                    ]
+                )
+            ]
+        )
+    )]
+    #[OA\Response(
+        response: 422,
+        description: 'バリデーションエラー'
+    )]
     public function store(Request $request): JsonResponse
     {
         $validated = $request->validate([
