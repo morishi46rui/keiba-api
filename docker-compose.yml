@@ -1,0 +1,85 @@
+version: '3.8'
+
+services:
+  # Nginx Webサーバー
+  nginx:
+    image: nginx:alpine
+    container_name: keiba_nginx
+    ports:
+      - "8000:80"
+    volumes:
+      - ./:/var/www
+      - ./docker/nginx/nginx.conf:/etc/nginx/conf.d/default.conf
+    depends_on:
+      - app
+    networks:
+      - keiba
+
+  # PHP-FPMアプリケーション
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: keiba_app
+    volumes:
+      - ./:/var/www
+    depends_on:
+      - db
+      - redis
+    networks:
+      - keiba
+    environment:
+      - DB_CONNECTION=pgsql
+      - DB_HOST=db
+      - DB_PORT=5432
+      - DB_DATABASE=${DB_DATABASE:-keiba}
+      - DB_USERNAME=${DB_USERNAME:-keiba_user}
+      - DB_PASSWORD=${DB_PASSWORD:-secret}
+
+  # PostgreSQL 18データベース
+  db:
+    image: postgres:18-alpine
+    container_name: keiba_db
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_DB: ${DB_DATABASE:-keiba}
+      POSTGRES_USER: ${DB_USERNAME:-keiba_user}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-secret}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - keiba
+
+  # Redis (キャッシュ・セッション用)
+  redis:
+    image: redis:alpine
+    container_name: keiba_redis
+    ports:
+      - "6379:6379"
+    networks:
+      - keiba
+
+  # キューワーカー
+  queue:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: keiba_queue
+    command: php artisan queue:work --tries=3
+    volumes:
+      - ./:/var/www
+    depends_on:
+      - app
+      - db
+      - redis
+    networks:
+      - keiba
+
+networks:
+  keiba:
+    driver: bridge
+
+volumes:
+  postgres_data:
+    driver: local
