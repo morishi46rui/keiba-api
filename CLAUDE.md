@@ -8,6 +8,15 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 コードのコメント、コミットメッセージ、レスポンス、エラーメッセージなど、すべての出力は日本語で記述してください。ただし、変数名、関数名、クラス名などのコード自体は英語で記述します。
 
+## Command Execution Policy
+
+**重要: コマンドの実行は基本的に指示までにとどめてください。**
+
+-   ユーザーが明示的に「実行して」と指示した場合のみコマンドを実行してください
+-   それ以外の場合は、実行すべきコマンドを提示するだけにしてください
+-   例外: ファイルの読み取りや検索など、リスクのない操作は実行しても構いません
+-   勝手にコマンドを実行しないでください
+
 ## Project Overview
 
 This is a Laravel 12 API application for a keiba (horse racing) system. The project uses PostgreSQL 18 as the database and includes Vite with Tailwind CSS 4 for asset building. Docker Compose is used for the development environment.
