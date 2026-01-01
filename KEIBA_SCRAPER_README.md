@@ -203,6 +203,102 @@ docker-compose exec app php artisan keiba:scrape raceurl:202505040701
 | ScalikeJDBC             | Eloquent ORM                     |
 | SQLite                  | PostgreSQL 18                    |
 
+## データ抽出機能
+
+### RaceExtractorService クラス
+
+[app/Domains/RaceExtractorService.php](app/Domains/RaceExtractorService.php)
+
+Scala の`RowExtractor`を PHP に移植したクラスです。
+
+主な機能:
+
+-   `extract()` - 全てのレース HTML からデータを抽出
+-   `extract(string $year)` - 特定年のレース HTML からデータを抽出
+-   `extract(string $year, string $month)` - 特定年月のレース HTML からデータを抽出
+-   `extractFromHtml(string $filePath)` - 単一の HTML ファイルからデータを抽出
+
+抽出されるデータ:
+
+-   レース基本情報 (RaceInfo)
+-   レース結果 (RaceResult)
+-   コーナー通過順位 (CornerPosition)
+-   ラップタイム (LapTime)
+-   払戻金 (Payoff)
+
+### 追加モデル
+
+#### CornerPosition モデル
+
+[app/Models/CornerPosition.php](app/Models/CornerPosition.php)
+
+コーナー通過順位を保存するモデル
+
+| カラム名      | 型        | 説明                             |
+| ------------- | --------- | -------------------------------- |
+| id            | bigint    | 主キー (自動採番)                |
+| race_info_id  | bigint    | race_infos テーブルへの外部キー  |
+| corner_number | int       | コーナー番号 (1-4)               |
+| position_text | text      | 通過順位テキスト (例: 1,2,3-4,5) |
+| created_at    | timestamp | 作成日時                         |
+| updated_at    | timestamp | 更新日時                         |
+
+#### LapTime モデル
+
+[app/Models/LapTime.php](app/Models/LapTime.php)
+
+ラップタイムを保存するモデル
+
+| カラム名     | 型        | 説明                            |
+| ------------ | --------- | ------------------------------- |
+| id           | bigint    | 主キー (自動採番)               |
+| race_info_id | bigint    | race_infos テーブルへの外部キー |
+| furlong_no   | int       | ハロン数 (1, 2, 3, ...)         |
+| lap_time     | string    | ラップタイム (例: 12.3)         |
+| created_at   | timestamp | 作成日時                        |
+| updated_at   | timestamp | 更新日時                        |
+
+#### Payoff モデル
+
+[app/Models/Payoff.php](app/Models/Payoff.php)
+
+払戻金を保存するモデル
+
+| カラム名       | 型        | 説明                                                                            |
+| -------------- | --------- | ------------------------------------------------------------------------------- |
+| id             | bigint    | 主キー (自動採番)                                                               |
+| race_info_id   | bigint    | race_infos テーブルへの外部キー                                                 |
+| ticket_type    | int       | 馬券種類 (0:単勝, 1:複勝, 2:枠連, 3:馬連, 4:ワイド, 5:馬単, 6:三連複, 7:三連単) |
+| horse_number   | string    | 馬番 (例: 1, 1-2, 1-2-3)                                                        |
+| payoff         | string    | 払戻金 (例: 1,000 円)                                                           |
+| favorite_order | string    | 人気順 (例: 1 番人気)                                                           |
+| created_at     | timestamp | 作成日時                                                                        |
+| updated_at     | timestamp | 更新日時                                                                        |
+
+### keiba:extract コマンド
+
+[app/Console/Commands/KeibaExtractCommand.php](app/Console/Commands/KeibaExtractCommand.php)
+
+HTML ファイルからレースデータを抽出して DB に保存するコマンド
+
+#### 全てのレースデータを抽出
+
+```bash
+docker-compose exec app php artisan keiba:extract
+```
+
+#### 特定年のレースデータを抽出
+
+```bash
+docker-compose exec app php artisan keiba:extract extract:2022
+```
+
+#### 特定年月のレースデータを抽出
+
+```bash
+docker-compose exec app php artisan keiba:extract extract:2022:03
+```
+
 ## 実装していない機能 (今後の拡張)
 
 以下の機能はまだ実装されていません。必要に応じて追加実装してください。
@@ -215,20 +311,16 @@ docker-compose exec app php artisan keiba:scrape raceurl:202505040701
 
 ### Extractor 系
 
--   `RowExtractor` - HTML からデータを抽出して DB に保存
 -   `ShutubaExtractor` - 出馬表データの抽出
 -   `HorseExtractor` - 馬情報の抽出
 
 ### DAO/Model 系
 
--   `Payoff` (払戻)
 -   `Horse` (馬)
 -   `Jockey` (騎手)
 -   `Trainer` (調教師)
 -   `Owner` (馬主)
 -   `Breeder` (生産者)
--   `CornerPosition` (コーナー通過順位)
--   `LapTime` (ラップタイム)
 
 ### その他の機能
 

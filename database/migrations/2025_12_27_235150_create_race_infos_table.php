@@ -13,16 +13,16 @@ return new class extends Migration
     {
         Schema::create('race_infos', function (Blueprint $table) {
             $table->id();
-            $table->string('race_name');
-            $table->string('surface');
-            $table->integer('distance');
-            $table->string('weather');
-            $table->string('surface_state');
-            $table->time('race_start');
+            $table->string('race_name')->nullable();
+            $table->string('surface')->nullable();
+            $table->integer('distance')->nullable();
+            $table->string('weather')->nullable();
+            $table->string('surface_state')->nullable();
+            $table->time('race_start')->nullable();
             $table->integer('race_number');
             $table->date('date');
             $table->string('place_detail');
-            $table->text('race_class');
+            $table->text('race_class')->nullable();
             $table->timestamps();
 
             // インデックスを追加
