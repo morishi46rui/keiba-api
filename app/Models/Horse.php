@@ -21,6 +21,17 @@ class Horse extends Model
     protected $fillable = [
         'netkeiba_id',
         'name',
+        'sex',
+        'coat_color',
+        'birth_year',
+        'sire',
+        'dam',
+        'sire_of_dam',
+        'sire_sire',
+        'dam_dam',
+        'trainer_id',
+        'owner_id',
+        'breeder_id',
     ];
 
     /**
