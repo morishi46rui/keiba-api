@@ -2,8 +2,8 @@
 
 namespace App\Console\Commands;
 
-use App\Domains\RaceScraperService;
 use App\Domains\KeibaUtil;
+use App\Domains\RaceScraperService;
 use Illuminate\Console\Command;
 
 class KeibaScrapeCommand extends Command
@@ -39,6 +39,7 @@ class KeibaScrapeCommand extends Command
                 $this->info('全てのレースHTMLをスクレイピングします...');
                 $scraper->scrapeAll();
                 $this->info('スクレイピングが完了しました。');
+
                 return 0;
             }
 
@@ -51,6 +52,7 @@ class KeibaScrapeCommand extends Command
                     $this->info("{$year}年のレースHTMLをスクレイピングします...");
                     $scraper->scrapeYear($year);
                     $this->info('スクレイピングが完了しました。');
+
                     return 0;
                 } elseif (count($parts) === 2) {
                     $year = $parts[0];
@@ -58,9 +60,11 @@ class KeibaScrapeCommand extends Command
                     $this->info("{$year}年{$month}月のレースHTMLをスクレイピングします...");
                     $scraper->scrapeYearMonth($year, $month);
                     $this->info('スクレイピングが完了しました。');
+
                     return 0;
                 } else {
                     $this->error('無効なフォーマットです。使用例: scrapehtml:YYYY または scrapehtml:YYYY:MM');
+
                     return 1;
                 }
             }
@@ -69,13 +73,15 @@ class KeibaScrapeCommand extends Command
                 // raceurl:202505040701 の形式
                 $raceId = substr($action, strlen('raceurl:'));
 
-                if (!KeibaUtil::isValidRaceId($raceId)) {
+                if (! KeibaUtil::isValidRaceId($raceId)) {
                     $this->error('race_idは12桁の数字を指定してください (例: raceurl:202505040701)');
+
                     return 1;
                 }
 
                 $url = KeibaUtil::buildRaceUrl($raceId);
                 $this->line($url);
+
                 return 0;
             }
 
@@ -95,8 +101,9 @@ class KeibaScrapeCommand extends Command
             return 1;
 
         } catch (\Exception $e) {
-            $this->error('エラーが発生しました: ' . $e->getMessage());
+            $this->error('エラーが発生しました: '.$e->getMessage());
             $this->error($e->getTraceAsString());
+
             return 1;
         }
     }

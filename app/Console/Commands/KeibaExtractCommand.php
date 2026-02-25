@@ -37,6 +37,7 @@ class KeibaExtractCommand extends Command
                 $this->info('全てのレースHTMLからデータを抽出します...');
                 $extractor->extract();
                 $this->info('抽出が完了しました。');
+
                 return 0;
             }
 
@@ -49,6 +50,7 @@ class KeibaExtractCommand extends Command
                     $this->info("{$year}年のレースHTMLからデータを抽出します...");
                     $extractor->extract($year);
                     $this->info('抽出が完了しました。');
+
                     return 0;
                 } elseif (count($parts) === 2) {
                     $year = $parts[0];
@@ -56,9 +58,11 @@ class KeibaExtractCommand extends Command
                     $this->info("{$year}年{$month}月のレースHTMLからデータを抽出します...");
                     $extractor->extract($year, $month);
                     $this->info('抽出が完了しました。');
+
                     return 0;
                 } else {
                     $this->error('無効なフォーマットです。使用例: extract:YYYY または extract:YYYY:MM');
+
                     return 1;
                 }
             }
@@ -78,8 +82,9 @@ class KeibaExtractCommand extends Command
             return 1;
 
         } catch (\Exception $e) {
-            $this->error('エラーが発生しました: ' . $e->getMessage());
+            $this->error('エラーが発生しました: '.$e->getMessage());
             $this->error($e->getTraceAsString());
+
             return 1;
         }
     }

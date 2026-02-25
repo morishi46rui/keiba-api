@@ -130,6 +130,7 @@ class KeibaUtil
                 return $state;
             }
         }
+
         return '他';
     }
 
@@ -143,6 +144,7 @@ class KeibaUtil
                 return $state;
             }
         }
+
         return '他';
     }
 
@@ -156,6 +158,7 @@ class KeibaUtil
                 return $state;
             }
         }
+
         return '他';
     }
 
@@ -169,6 +172,7 @@ class KeibaUtil
                 return $state;
             }
         }
+
         return '他';
     }
 
@@ -182,6 +186,7 @@ class KeibaUtil
                 return $state;
             }
         }
+
         return '他';
     }
 
@@ -194,6 +199,7 @@ class KeibaUtil
         if ($index === false) {
             throw new \InvalidArgumentException("不明な馬券の種類: {$ticketType}");
         }
+
         return $index;
     }
 
@@ -231,7 +237,7 @@ class KeibaUtil
 
         foreach ($patterns as $pattern => $replacement) {
             if (str_contains($class, $pattern)) {
-                return $class . $replacement;
+                return $class.$replacement;
             }
         }
 
@@ -248,6 +254,7 @@ class KeibaUtil
         foreach (self::POSITION_STATES as $index => $state) {
             if (str_contains($position, $state)) {
                 $pos = (int) str_replace($state, '', $position);
+
                 return [
                     'position' => $pos > 0 ? $pos : null,
                     'label' => $index,
@@ -273,6 +280,7 @@ class KeibaUtil
         if (strlen($raceId) >= 6) {
             return substr($raceId, 4, 2);
         }
+
         return 'unknown';
     }
 

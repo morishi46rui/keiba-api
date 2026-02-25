@@ -22,9 +22,10 @@ class RaceExtractorService
      */
     private function parseHtml(string $html): DOMXPath
     {
-        $dom = new DOMDocument();
+        $dom = new DOMDocument;
         // エラーを抑制してHTMLをロード
         @$dom->loadHTML(mb_convert_encoding($html, 'HTML-ENTITIES', 'UTF-8'));
+
         return new DOMXPath($dom);
     }
 
@@ -107,7 +108,7 @@ class RaceExtractorService
         // レースクラスを抽出
         $classPattern = '/(.+?)(\d+万下|未勝利|新馬|オープン)/';
         if (preg_match($classPattern, $raceName, $classMatch)) {
-            $raceClass = trim($classMatch[1]) . $classMatch[2];
+            $raceClass = trim($classMatch[1]).$classMatch[2];
         } else {
             $raceClass = $raceName;
         }
@@ -262,6 +263,7 @@ class RaceExtractorService
                 ];
             } catch (Exception $e) {
                 echo "行の処理でエラー: {$e->getMessage()}\n";
+
                 continue;
             }
         }
@@ -275,10 +277,11 @@ class RaceExtractorService
     private function extractIdFromHtml(string $html, string $pattern): string
     {
         // パターンにデリミタを追加（#を使用してスラッシュをエスケープ不要に）
-        $delimitedPattern = '#' . $pattern . '#';
+        $delimitedPattern = '#'.$pattern.'#';
         if (preg_match($delimitedPattern, $html, $match)) {
             return $match[1];
         }
+
         return '';
     }
 
@@ -413,6 +416,7 @@ class RaceExtractorService
                         ];
                     } catch (Exception $e) {
                         echo "払戻金の処理でエラー: {$e->getMessage()}\n";
+
                         continue;
                     }
                 }
@@ -485,10 +489,10 @@ class RaceExtractorService
                 Payoff::create($payoffData);
             }
 
-            echo "完了: {$fileName} (レース結果: " . count($raceResults) .
-                '件, コーナー: ' . count($cornerPositions) .
-                '件, ラップ: ' . count($lapTimes) .
-                '件, 払戻: ' . count($payoffs) . "件)\n";
+            echo "完了: {$fileName} (レース結果: ".count($raceResults).
+                '件, コーナー: '.count($cornerPositions).
+                '件, ラップ: '.count($lapTimes).
+                '件, 払戻: '.count($payoffs)."件)\n";
         } catch (Exception $e) {
             echo "ファイル処理エラー {$fileName}: {$e->getMessage()}\n";
         }
@@ -514,7 +518,7 @@ class RaceExtractorService
                 continue;
             }
 
-            $path = $directory . DIRECTORY_SEPARATOR . $item;
+            $path = $directory.DIRECTORY_SEPARATOR.$item;
 
             if (is_dir($path)) {
                 $htmlFiles = array_merge($htmlFiles, $this->findHtmlFiles($path));
@@ -535,20 +539,22 @@ class RaceExtractorService
 
         if (! is_dir($baseFolder)) {
             echo "HTMLフォルダが見つかりません: {$baseFolder}\n";
+
             return;
         }
 
         // 年・月フィルタを適用
         if ($year !== null && $month !== null) {
-            $targetFolder = $baseFolder . DIRECTORY_SEPARATOR . $year . DIRECTORY_SEPARATOR . $month;
+            $targetFolder = $baseFolder.DIRECTORY_SEPARATOR.$year.DIRECTORY_SEPARATOR.$month;
         } elseif ($year !== null) {
-            $targetFolder = $baseFolder . DIRECTORY_SEPARATOR . $year;
+            $targetFolder = $baseFolder.DIRECTORY_SEPARATOR.$year;
         } else {
             $targetFolder = $baseFolder;
         }
 
         if (! is_dir($targetFolder)) {
             echo "指定されたフォルダが見つかりません: {$targetFolder}\n";
+
             return;
         }
 
@@ -561,7 +567,7 @@ class RaceExtractorService
         };
 
         echo "対象: {$filterMessage}\n";
-        echo count($htmlFiles) . "個のHTMLファイルを処理します\n";
+        echo count($htmlFiles)."個のHTMLファイルを処理します\n";
 
         foreach ($htmlFiles as $file) {
             $this->extractFromHtml($file);

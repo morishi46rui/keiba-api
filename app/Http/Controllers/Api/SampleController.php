@@ -3,8 +3,8 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 use OpenApi\Attributes as OA;
 
 class SampleController extends Controller
@@ -30,7 +30,7 @@ class SampleController extends Controller
                     type: 'string',
                     format: 'date-time',
                     example: '2025-12-28T01:00:00Z'
-                )
+                ),
             ]
         )
     )]
@@ -53,7 +53,7 @@ class SampleController extends Controller
                 required: ['name'],
                 properties: [
                     new OA\Property('name', type: 'string', example: 'テストデータ'),
-                    new OA\Property('description', type: 'string', example: '説明文')
+                    new OA\Property('description', type: 'string', example: '説明文'),
                 ]
             )
         )
@@ -69,9 +69,9 @@ class SampleController extends Controller
                     type: 'object',
                     properties: [
                         new OA\Property('name', type: 'string'),
-                        new OA\Property('description', type: 'string')
+                        new OA\Property('description', type: 'string'),
                     ]
-                )
+                ),
             ]
         )
     )]

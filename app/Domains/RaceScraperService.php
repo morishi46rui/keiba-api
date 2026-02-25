@@ -3,8 +3,8 @@
 namespace App\Domains;
 
 use Illuminate\Support\Facades\Http;
-use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Storage;
 
 /**
  * ネット競馬からレース情報をスクレイピングするサービス
@@ -71,8 +71,9 @@ class RaceScraperService
             [$url, $year, $month, $day] = $urlData;
 
             // レースIDを抽出
-            if (!preg_match('/\/race\/(\d+)\//', $url, $matches)) {
+            if (! preg_match('/\/race\/(\d+)\//', $url, $matches)) {
                 Log::warning("レースIDを抽出できませんでした: {$url}");
+
                 continue;
             }
 
@@ -86,13 +87,14 @@ class RaceScraperService
 
             // 既にファイルが存在する場合はスキップ
             if (Storage::disk('local')->exists($filePath)) {
-                Log::info(($index + 1) . ": スキップ (既に存在) {$url}");
+                Log::info(($index + 1).": スキップ (既に存在) {$url}");
                 $skipped++;
+
                 continue;
             }
 
             // HTMLをダウンロード
-            Log::info(($index + 1) . ": ダウンロード中 {$url}");
+            Log::info(($index + 1).": ダウンロード中 {$url}");
 
             try {
                 $html = $this->fetchHtml($url);
@@ -108,7 +110,7 @@ class RaceScraperService
                 // サーバーに負荷をかけないよう待機
                 sleep(3);
             } catch (\Exception $e) {
-                Log::error("ダウンロードエラー {$url}: " . $e->getMessage());
+                Log::error("ダウンロードエラー {$url}: ".$e->getMessage());
             }
         }
 
@@ -129,19 +131,20 @@ class RaceScraperService
         $urlBasePath = storage_path('app/url/race');
 
         Log::info("URLベースパス: {$urlBasePath}");
-        Log::info("年フィルタ: " . ($yearFilter ?? 'なし') . ", 月フィルタ: " . ($monthFilter ?? 'なし'));
+        Log::info('年フィルタ: '.($yearFilter ?? 'なし').', 月フィルタ: '.($monthFilter ?? 'なし'));
 
-        if (!is_dir($urlBasePath)) {
+        if (! is_dir($urlBasePath)) {
             Log::warning("URLディレクトリが見つかりません: {$urlBasePath}");
             echo "URLディレクトリが見つかりません: {$urlBasePath}\n";
+
             return [];
         }
 
-        Log::info("URLディレクトリが見つかりました");
+        Log::info('URLディレクトリが見つかりました');
 
         // 年ディレクトリを走査
         $yearDirs = scandir($urlBasePath);
-        Log::info("年ディレクトリ数: " . count($yearDirs));
+        Log::info('年ディレクトリ数: '.count($yearDirs));
 
         foreach ($yearDirs as $yearDir) {
             if ($yearDir === '.' || $yearDir === '..') {
@@ -149,8 +152,9 @@ class RaceScraperService
             }
 
             $yearPath = "{$urlBasePath}/{$yearDir}";
-            if (!is_dir($yearPath)) {
+            if (! is_dir($yearPath)) {
                 Log::info("スキップ (ディレクトリではない): {$yearDir}");
+
                 continue;
             }
 
@@ -159,6 +163,7 @@ class RaceScraperService
             // 年フィルタをチェック
             if ($yearFilter !== null && $yearDir !== $yearFilter) {
                 Log::info("年フィルタによりスキップ: {$yearDir}");
+
                 continue;
             }
 
@@ -170,7 +175,7 @@ class RaceScraperService
                 }
 
                 $monthPath = "{$yearPath}/{$monthDir}";
-                if (!is_dir($monthPath)) {
+                if (! is_dir($monthPath)) {
                     continue;
                 }
 
@@ -181,7 +186,7 @@ class RaceScraperService
 
                 // race_url.txtを読み込み
                 $raceUrlFile = "{$monthPath}/race_url.txt";
-                if (!file_exists($raceUrlFile)) {
+                if (! file_exists($raceUrlFile)) {
                     continue;
                 }
 
@@ -221,8 +226,8 @@ class RaceScraperService
             'User-Agent' => 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
         ])->timeout(30)->get($url);
 
-        if (!$response->successful()) {
-            throw new \RuntimeException("HTTPリクエストが失敗しました: " . $response->status());
+        if (! $response->successful()) {
+            throw new \RuntimeException('HTTPリクエストが失敗しました: '.$response->status());
         }
 
         return $response->body();
