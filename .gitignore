@@ -22,7 +22,7 @@
 Homestead.json
 Homestead.yaml
 Thumbs.db
-.CLAUDE.md
+CLAUDE.md
 
 # Docker関連
 /docker/postgres/data
